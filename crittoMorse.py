@@ -1,4 +1,6 @@
 import random
+import sys
+from os import system
 
 morse_code = {
     'A': '.-', 'B': '-...', 'C': '-.-.', 'D': '-..', 'E': '.', 'F': '..-.', 'G': '--.', 'H': '....', 'I': '..', 'J': '.---',
@@ -117,8 +119,10 @@ def encrypt_file(file_path, encrypted_file_path):
             with open(key_file_path, 'a', encoding='utf-8') as key_file:
                 key_file.write(key + '\n')
             count += 1
-            if count % 100 == 0:
+            if count % 1000 == 0:
+                system('cls')
                 print(f'{count}/{total} lines encrypted')
+    print("\33[1;32mEncryption completed\33[0m")
 
 def decrypt_file(encrypted_file_path, key_file_path, decrypted_file_path):
     total = 0
@@ -135,16 +139,30 @@ def decrypt_file(encrypted_file_path, key_file_path, decrypted_file_path):
         with open(decrypted_file_path, 'a', encoding='utf-8') as decrypted_file:
             decrypted_file.write(decrypted + '\n')
         count += 1
-        if count % 100 == 0:
+        if count % 1000 == 0:
+            system('cls')
             print(f'{count}/{total} lines decrypted')
+    print("\33[1;32mDecryption completed\33[0m")
 
 def main():
-    file = 'test.txt'
-    encrypted_file = 'test_encrypted.txt'
-    key_file = 'test_encrypted.key'
-    decrypted_file = 'test_decrypted.txt'
-    encrypt_file(file, encrypted_file)
-    decrypt_file(encrypted_file, key_file, decrypted_file)
+    modes = ['encrypt', 'decrypt']
+    if len(sys.argv) != 3:
+        print(f"Usage: python {sys.argv[0]} <file> <mode>")
+        exit()
+    if sys.argv[2] not in modes:
+        print(f"Usage: python {sys.argv[0]} <file> <mode>")
+        print(f"Mode must be one of {modes}")
+        exit()
+    if sys.argv[2] == 'encrypt':
+        file = sys.argv[1]
+        encrypted_file = file.split('.')[0] + '_encrypted.txt'
+        key_file = file.split('.')[0] + '.key'
+        encrypt_file(file, encrypted_file)
+    elif sys.argv[2] == 'decrypt':
+        encrypted_file = sys.argv[1]
+        key_file = encrypted_file.split('.')[0] + '.key'
+        decrypted_file = encrypted_file.split('_')[0] + '_decrypted.txt'
+        decrypt_file(encrypted_file, key_file, decrypted_file)
     
 if __name__ == '__main__':
     main()
